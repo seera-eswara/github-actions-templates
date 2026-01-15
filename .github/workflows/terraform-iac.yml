@@ -6,6 +6,9 @@ on:
       environment:
         required: true
         type: string
+      policy_repo:
+        required: false
+        type: string
       terraform_version:
         required: false
         default: "1.6.6"
