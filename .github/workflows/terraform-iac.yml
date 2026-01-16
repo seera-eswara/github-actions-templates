@@ -59,8 +59,10 @@ jobs:
 
       - name: Install Conftest
         run: |
-          curl -sSL https://raw.githubusercontent.com/open-policy-agent/conftest/master/install.sh | sudo bash
-
+              LATEST_VERSION=$(curl -s https://api.github.com/repos/open-policy-agent/conftest/releases/latest | grep tag_name | cut -d '"' -f 4)
+              curl -L https://github.com/open-policy-agent/conftest/releases/download/${LATEST_VERSION}/conftest_${LATEST_VERSION#v}_Linux_x86_64.tar.gz -o conftest.tar.gz
+              tar -xzf conftest.tar.gz
+              sudo mv conftest /usr/local/bin/
 
       # ---------- LINT ----------
       - name: Terraform Format
