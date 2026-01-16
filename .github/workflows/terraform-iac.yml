@@ -1,5 +1,4 @@
 name: Terraform Enterprise Pipeline
-
 on:
   workflow_call:
     inputs:
@@ -29,6 +28,9 @@ jobs:
   iac:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    env:
+      TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
@@ -90,6 +92,13 @@ jobs:
 
       - name: Trivy
         run: trivy config .
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}  
 
       # ---------- PLAN ----------
       - name: Terraform Plan
