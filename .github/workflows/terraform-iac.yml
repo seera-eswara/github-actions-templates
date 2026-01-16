@@ -59,7 +59,7 @@ jobs:
 
       - name: Install Conftest
         run: |
-          wget -q https://github.com/open-policy-agent/conftest/releases/download/v0.48.1/conftest_0.48.1_Linux_x86_64.tar.gz
+          curl -sSL https://raw.githubusercontent.com/open-policy-agent/conftest/master/install.sh | sudo bash
           tar xzf conftest_0.48.1_Linux_x86_64.tar.gz
           sudo mv conftest /usr/local/bin/
 
