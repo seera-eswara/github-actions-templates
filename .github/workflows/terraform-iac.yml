@@ -101,6 +101,9 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}  
 
       # ---------- PLAN ----------
+      - name: Debug Env Vars
+        run: |
+          echo "Available env vars:" && env | grep -iE 'tf_var|arm_sub|azure' || true
       - name: Terraform Plan
         run: |
           terraform init
