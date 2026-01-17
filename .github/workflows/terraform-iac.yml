@@ -16,6 +16,10 @@ on:
         required: false
         default: "1.6.6"
         type: string
+      policy_path:
+        required: false
+        type: string
+        default: policies/
     secrets:
       AZURE_CLIENT_ID:
         required: true
@@ -112,7 +116,7 @@ jobs:
 
       # ---------- POLICY ----------
       - name: OPA Policy Enforcement
-        run: conftest test plan.json -p policies/
+        run: conftest test plan.json -p ${{ inputs.policy_path }}
 
       # ---------- APPLY ----------
       - name: Terraform Apply
