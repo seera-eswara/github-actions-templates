@@ -27,6 +27,8 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
+      SSH_PRIVATE_KEY:
+        required: true
 
 jobs:
   iac:
