@@ -1,3 +1,5 @@
+      - name: List loaded SSH keys
+        run: ssh-add -l
 name: Terraform Enterprise Pipeline
 on:
   workflow_call:
