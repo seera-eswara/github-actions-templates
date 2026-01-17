@@ -43,9 +43,14 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Configure git to use SSH
-        run: git config --global url."git@github.com:".insteadOf "https://github.com/"
+        run: |
+          git config --global url."git@github.com:".insteadOf "https://github.com/"
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
 
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: List loaded SSH keys
         run: ssh-add -l
