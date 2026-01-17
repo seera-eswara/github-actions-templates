@@ -42,6 +42,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Checkout policy repo if specified
+      - name: Checkout policy repo
+        if: inputs.policy_repo != ''
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.policy_repo }}
+          path: terraform-policy-as-code
+
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ inputs.terraform_version }}
@@ -116,7 +124,7 @@ jobs:
 
       # ---------- POLICY ----------
       - name: OPA Policy Enforcement
-        run: conftest test plan.json -p ${{ inputs.policy_path }}
+        run: conftest test plan.json -p terraform-policy-as-code/${{ inputs.policy_path }}
 
       # ---------- APPLY ----------
       - name: Terraform Apply
