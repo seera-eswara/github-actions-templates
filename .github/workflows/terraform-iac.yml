@@ -47,6 +47,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
+      # Checkout policy repo if specified
+      - name: Checkout policy repo
+        if: inputs.policy_repo != ''
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.policy_repo }}
+          path: terraform-policy-as-code
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Configure git to use SSH for Terraform modules
         run: |
           git config --global url."git@github.com:".insteadOf "https://github.com/"
@@ -55,14 +64,6 @@ jobs:
 
       - name: List loaded SSH keys
         run: ssh-add -l
-
-      # Checkout policy repo if specified
-      - name: Checkout policy repo
-        if: inputs.policy_repo != ''
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.policy_repo }}
-          path: terraform-policy-as-code
 
       - uses: hashicorp/setup-terraform@v3
         with:
