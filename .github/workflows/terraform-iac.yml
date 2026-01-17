@@ -149,7 +149,7 @@ jobs:
 
       # ---------- POLICY ----------
       - name: OPA Policy Enforcement
-        run: conftest test plan.json -p terraform-policy-as-code/${{ inputs.policy_path }}
+        run: conftest test plan.json -p ../../terraform-policy-as-code/${{ inputs.policy_path }}
         working-directory: ${{ inputs.working_directory }}
 
       # ---------- APPLY ----------
