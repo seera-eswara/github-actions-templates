@@ -55,6 +55,12 @@ jobs:
           path: terraform-policy-as-code
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Verify SSH access to GitHub
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh -T git@github.com || echo "SSH test completed"
+
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ inputs.terraform_version }}
