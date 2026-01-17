@@ -45,10 +45,11 @@ jobs:
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: List loaded SSH keys
-        run: ssh-add -l    
 
       - uses: actions/checkout@v4
+
+      - name: List loaded SSH keys
+        run: ssh-add -l
 
       # Checkout policy repo if specified
       - name: Checkout policy repo
