@@ -37,19 +37,20 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     steps:
-      - name: Set up SSH
+      - name: Set up SSH for Terraform modules
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Configure git to use SSH
+      - name: Configure git to use SSH for Terraform modules
         run: |
           git config --global url."git@github.com:".insteadOf "https://github.com/"
           mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - uses: actions/checkout@v4
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: List loaded SSH keys
