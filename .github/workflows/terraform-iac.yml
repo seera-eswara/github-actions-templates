@@ -37,10 +37,13 @@ jobs:
     env:
       TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      GIT_SSH_COMMAND: ssh -o StrictHostKeyChecking=no
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_USE_OIDC: "true"
+      # Use HTTPS for module clones; SSH optional
 
     steps:
-      - name: Set up SSH for private modules
+      - name: (Optional) Set up SSH for private modules
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -57,11 +60,11 @@ jobs:
           path: terraform-policy-as-code
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify SSH access to GitHub
+      - name: Configure Git HTTPS auth for modules
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null || true
-          ssh -T git@github.com || echo "SSH test completed"
+          git config --global http.https://github.com/.extraheader "AUTHORIZATION: basic $(printf "x-access-token:%s" "$GITHUB_TOKEN" | base64)"
 
       - uses: hashicorp/setup-terraform@v3
         with:
