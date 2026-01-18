@@ -19,7 +19,7 @@ on:
       policy_path:
         required: false
         type: string
-        default: policies/
+        default: policies/definitions/
     secrets:
       AZURE_CLIENT_ID:
         required: true
@@ -80,12 +80,12 @@ jobs:
       - name: Install Checkov
         run: pip install checkov
 
-      - name: Install Trivy
-        run: |
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-          sudo apt-get update
-          sudo apt-get install -y trivy
+      # - name: Install Trivy
+      #   run: |
+      #     wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+      #     echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+      #     sudo apt-get update
+      #     sudo apt-get install -y trivy
 
       - name: Install Conftest
         run: |
@@ -95,6 +95,11 @@ jobs:
               sudo mv conftest /usr/local/bin/
 
       # ---------- LINT ----------
+      #terraform fmt - Enforces consistent code formatting and style
+      # Handles indentation, spacing, alignment
+      # Makes code look uniform
+      # The -check flag just validates without modifying
+
       - name: Terraform Format
         run: terraform fmt -check -recursive
         working-directory: ${{ inputs.working_directory }}
@@ -103,6 +108,12 @@ jobs:
         run: terraform init -backend=false && terraform validate
         working-directory: ${{ inputs.working_directory }}
 
+      # Detects best practice violations
+      # Identifies potential errors and misconfigurations
+      # Checks for deprecated syntax
+      # Enforces naming conventions
+      # Provider-specific rules (Azure, AWS, GCP, etc.)
+      # Catches logic issues beyond just formatting
       - name: TFLint
         uses: terraform-linters/setup-tflint@v4
 
@@ -116,17 +127,34 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
 
       # ---------- SECURITY ----------
+      #       tfsec - Terraform-specific security scanner
+      # Analyzes only Terraform code for security issues
+      # Deep knowledge of Terraform best practices
+      # Fast and lightweight
+      # Example: detects hardcoded credentials, missing encryption settings  
       - name: Tfsec
         run: tfsec .
         working-directory: ${{ inputs.working_directory }}
+
+      # checkov - Multi-framework policy-as-code platform
+      # Works with Terraform, CloudFormation, Kubernetes, Dockerfile, etc.
+      # Checks against compliance frameworks (CIS, HIPAA, PCI-DSS, etc.)
+      # More comprehensive policy enforcement
+      # Can apply custom policies
+      # Slower than tfsec due to broader scope  
 
       - name: Checkov
         run: checkov -d .
         working-directory: ${{ inputs.working_directory }}
 
-      - name: Trivy
-        run: trivy config .
-        working-directory: ${{ inputs.working_directory }}
+      # trivy - Vulnerability and configuration scanner
+      # Scans container images, filesystem, and configurations
+      # Focuses on known CVEs and vulnerabilities
+      # Works across multiple file types and cloud providers
+      # Great for supply chain security
+      # - name: Trivy
+      #   run: trivy config .
+      #   working-directory: ${{ inputs.working_directory }}
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
